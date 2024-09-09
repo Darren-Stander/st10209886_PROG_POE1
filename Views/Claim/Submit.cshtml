@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Submit Claim";
+}
+
+<style>
+    body {
+        font-family: sans-serif;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    form {
+        width: 50%;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+    }
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 3px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0069d9;
+    }
+</style>
+
+<h2>Submit Claim</h2>
+
+<!-- Form for submitting the claim -->
+<form>
+    <div class="form-group">
+        <label>Lecturer Number</label>
+        <input type="text" class="form-control" placeholder="Enter Lecturer Number" />
+    </div>
+    <div class="form-group">
+        <label>Hours Worked</label>
+        <input type="number" class="form-control" placeholder="Enter hours worked" />
+    </div>
+    <div class="form-group">
+        <label>Hourly Rate</label>
+        <input type="number" class="form-control" placeholder="Enter hourly rate" />
+    </div>
+    <button class="btn btn-primary">Submit</button>
+</form>
+
+<!-- Form for uploading a file -->
+<form>
+    <div class="form-group">
+        <label>Upload Supporting Document</label>
+        <input type="file" class="form-control" />
+    </div>
+    <button class="btn btn-primary">Upload Document</button>
+</form>
