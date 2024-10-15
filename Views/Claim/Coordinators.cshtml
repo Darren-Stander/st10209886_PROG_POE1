@@ -1,0 +1,50 @@
+﻿
+@{
+    ViewData["Title"] = "Coordinators";
+}
+
+<h2>Claims Pending</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Lecturer Number</th>
+            <th>Hours Worked</th>
+            <th>Hourly Rate</th>
+            <th>Total Amount</th>
+            <th>Supporting Document</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.LecturerNumber</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.HourlyRate</td>
+                <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(claim.SupportingDocument))
+                    {
+                        <a href="@Url.Content("~/uploads/" + claim.SupportingDocument)" target="_blank">View Document</a>
+                    }
+                    else
+                    {
+                        <span>No document</span>
+                    }
+                </td>
+                <td>
+                    <form method="post" asp-action="Approve" asp-controller="Claim">
+                        <input type="hidden" name="claimId" value="@claim.ClaimId" />
+                        <button type="submit" class="btn btn-success">Approve</button>
+                    </form>
+                    <form method="post" asp-action="Reject" asp-controller="Claim" style="display:inline;">
+                        <input type="hidden" name="claimId" value="@claim.ClaimId" />
+                        <button type="submit" class="btn btn-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

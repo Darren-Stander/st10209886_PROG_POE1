@@ -48,36 +48,71 @@
         cursor: pointer;
     }
 
-    button:hover {
-        background-color: #0069d9;
+        button:hover {
+            background-color: #0069d9;
+        }
+
+    #uploadedFileName {
+        margin-top: 10px;
+        color: green;
+    }
+
+    #errorMessage {
+        color: red;
+        margin-top: 10px;
     }
 </style>
 
 <h2>Submit Claim</h2>
 
-<!-- Form for submitting the claim -->
-<form>
+<!-- Main form for submitting the claim -->
+<form method="POST">
     <div class="form-group">
         <label>Lecturer Number</label>
-        <input type="text" class="form-control" placeholder="Enter Lecturer Number" />
+        <input type="text" class="form-control" placeholder="Enter Lecturer Number" required />
     </div>
     <div class="form-group">
         <label>Hours Worked</label>
-        <input type="number" class="form-control" placeholder="Enter hours worked" />
+        <input type="number" class="form-control" placeholder="Enter hours worked" required />
     </div>
     <div class="form-group">
         <label>Hourly Rate</label>
-        <input type="number" class="form-control" placeholder="Enter hourly rate" />
+        <input type="number" class="form-control" placeholder="Enter hourly rate" required />
     </div>
-    <button class="btn btn-primary">Submit</button>
-</form>
-
-<!-- Form for uploading a file -->
-<form>
     <div class="form-group">
-        <label>Upload Supporting Document</label>
-        <input type="file" class="form-control" />
+        <label>Upload Supporting Document (pdf, docx, xlsx)</label>
+        <input type="file" id="fileUpload" class="form-control" accept=".pdf,.docx,.xlsx" required />
+        <div id="uploadedFileName"></div>
+        <div id="errorMessage"></div>
     </div>
-    <button class="btn btn-primary">Upload Document</button>
+    <button type="submit" class="btn btn-primary">Submit Claim</button>
 </form>
 
+<!-- JavaScript for validating file size and type -->
+<script>
+    const fileUpload = document.getElementById('fileUpload');
+    const uploadedFileName = document.getElementById('uploadedFileName');
+    const errorMessage = document.getElementById('errorMessage');
+
+    fileUpload.addEventListener('change', function () {
+        const file = fileUpload.files[0];
+        const allowedFileTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        const maxSize = 5 * 1024 * 1024; // 5 MB
+
+        // Reset messages
+        uploadedFileName.textContent = '';
+        errorMessage.textContent = '';
+
+        if (file) {
+            if (!allowedFileTypes.includes(file.type)) {
+                errorMessage.textContent = 'Invalid file type. Please upload a .pdf, .docx, or .xlsx file.';
+                fileUpload.value = '';
+            } else if (file.size > maxSize) {
+                errorMessage.textContent = 'File size exceeds 5 MB limit.';
+                fileUpload.value = '';
+            } else {
+                uploadedFileName.textContent = `Uploaded file: ${file.name}`;
+            }
+        }
+    });
+</script>
