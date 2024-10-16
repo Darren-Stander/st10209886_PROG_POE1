@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using st10209886_PROG_POE1.Models;
+
 namespace st10209886_PROG_POE1
 {
     public class Program
@@ -8,6 +11,11 @@ namespace st10209886_PROG_POE1
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<ClaimContext>(options =>
+
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            
 
             var app = builder.Build();
 

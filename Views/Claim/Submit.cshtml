@@ -1,32 +1,29 @@
-﻿@{
-    ViewData["Title"] = "Submit Claim";
-}
+﻿@model st10209886_PROG_POE1.Models.Claim
 
 <style>
+    /* The same styling as provided earlier */
     body {
-        font-family: sans-serif;
+        font-family: 'Arial', sans-serif;
     }
 
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    form {
+    .form-container {
         width: 50%;
-        margin: 0 auto;
+        margin: 50px auto;
         padding: 20px;
         border: 1px solid #ccc;
-        border-radius: 5px;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
 
     label {
+        font-weight: bold;
+        margin-bottom: 10px;
         display: block;
-        margin-bottom: 5px;
     }
 
     input[type="text"],
@@ -35,21 +32,33 @@
         width: 100%;
         padding: 10px;
         border: 1px solid #ccc;
-        border-radius: 3px;
+        border-radius: 5px;
         box-sizing: border-box;
     }
 
-    button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 3px;
+    button[type="submit"] {
         background-color: #007bff;
         color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
         cursor: pointer;
+        font-size: 16px;
     }
 
-        button:hover {
-            background-color: #0069d9;
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .form-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
         }
 
     #uploadedFileName {
@@ -63,30 +72,38 @@
     }
 </style>
 
-<h2>Submit Claim</h2>
+<div class="form-container">
+    <div class="form-header">
+        <h2>Submit Your Claim</h2>
+    </div>
 
-<!-- Main form for submitting the claim -->
-<form method="POST">
-    <div class="form-group">
-        <label>Lecturer Number</label>
-        <input type="text" class="form-control" placeholder="Enter Lecturer Number" required />
-    </div>
-    <div class="form-group">
-        <label>Hours Worked</label>
-        <input type="number" class="form-control" placeholder="Enter hours worked" required />
-    </div>
-    <div class="form-group">
-        <label>Hourly Rate</label>
-        <input type="number" class="form-control" placeholder="Enter hourly rate" required />
-    </div>
-    <div class="form-group">
-        <label>Upload Supporting Document (pdf, docx, xlsx)</label>
-        <input type="file" id="fileUpload" class="form-control" accept=".pdf,.docx,.xlsx" required />
-        <div id="uploadedFileName"></div>
-        <div id="errorMessage"></div>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit Claim</button>
-</form>
+    <!-- Adding enctype for file uploads -->
+    <form asp-action="Submit" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label asp-for="LecturerNumber"></label>
+            <input asp-for="LecturerNumber" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="HoursWorked"></label>
+            <input asp-for="HoursWorked" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="HourlyRate"></label>
+            <input asp-for="HourlyRate" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SupportingDocument">Supporting Document (pdf, docx, xlsx)</label>
+            <input asp-for="SupportingDocument" type="file" class="form-control" accept=".pdf,.docx,.xlsx" id="fileUpload" required />
+            <div id="uploadedFileName"></div>
+            <div id="errorMessage"></div>
+        </div>
+
+        <button type="submit">Submit Claim</button>
+    </form>
+</div>
 
 <!-- JavaScript for validating file size and type -->
 <script>
@@ -106,10 +123,10 @@
         if (file) {
             if (!allowedFileTypes.includes(file.type)) {
                 errorMessage.textContent = 'Invalid file type. Please upload a .pdf, .docx, or .xlsx file.';
-                fileUpload.value = '';
+                fileUpload.value = ''; // Reset the file input
             } else if (file.size > maxSize) {
-                errorMessage.textContent = 'File size exceeds 5 MB limit.';
-                fileUpload.value = '';
+                errorMessage.textContent = 'File size exceeds the 5 MB limit.';
+                fileUpload.value = ''; // Reset the file input
             } else {
                 uploadedFileName.textContent = `Uploaded file: ${file.name}`;
             }

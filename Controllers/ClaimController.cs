@@ -1,18 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using st10209886_PROG_POE1.Models; // Make sure this points to your models folder
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using st10209886_PROG_POE1.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace st10209886_PROG_POE1.Controllers
 {
     public class ClaimController : Controller
     {
-        // Simulate a data source with a list of claims
-        private static List<Claim> claims = new List<Claim>
+        private readonly ClaimContext _context;
+
+        // Inject ClaimContext (DbContext) through the constructor
+        public ClaimController(ClaimContext context)
         {
-            new Claim { ClaimId = 1, LecturerNumber = "L001", HoursWorked = 10, HourlyRate = 50, SupportingDocument = "doc1.pdf", Status = "Pending" },
-            new Claim { ClaimId = 2, LecturerNumber = "L002", HoursWorked = 8, HourlyRate = 40, SupportingDocument = "doc2.docx", Status = "Pending" }
-        };
+            _context = context;
+        }
 
         // GET: Claims/Submit
         public IActionResult Submit()
@@ -20,42 +22,72 @@ namespace st10209886_PROG_POE1.Controllers
             return View();
         }
 
-        // GET: Claims/History
-        public IActionResult History()
+        // POST: Claims/Submit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Submit(Claim claim)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                claim.Status = "Pending"; // Automatically set to Pending when submitted
+                _context.Add(claim); // Adds the new claim to the DbContext
+                await _context.SaveChangesAsync(); // Saves the new claim to the database
+                return RedirectToAction(nameof(Coordinators)); // Redirect to the list of claims
+            }
+
+            // If the model is invalid, log the errors (optional)
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            foreach (var error in errors)
+            {
+                System.Diagnostics.Debug.WriteLine(error.ErrorMessage); // Log errors for debugging
+            }
+
+            // Return the form view with validation errors
+            return View(claim);
+        }
+
+        // GET: Claims/History
+        public async Task<IActionResult> History()
+        {
+            // Return all claims
+            var allClaims = await _context.Claims.ToListAsync();
+            return View(allClaims);
         }
 
         // GET: Claim/Coordinators - View pending claims
-        public IActionResult Coordinators()
+        public async Task<IActionResult> Coordinators()
         {
-            // Get all pending claims
-            var pendingClaims = claims.Where(c => c.Status == "Pending").ToList();
+            // Get all pending claims from the database
+            var pendingClaims = await _context.Claims.Where(c => c.Status == "Pending").ToListAsync();
             return View(pendingClaims);
         }
 
         // POST: Claim/Approve
         [HttpPost]
-        public IActionResult Approve(int claimId)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Approve(int claimId)
         {
-            var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
+            var claim = await _context.Claims.FindAsync(claimId);
             if (claim != null)
             {
                 claim.Status = "Approved"; // Set the claim status to Approved
+                await _context.SaveChangesAsync(); // Save changes to the database
             }
-            return RedirectToAction("Coordinators");
+            return RedirectToAction(nameof(Coordinators));
         }
 
         // POST: Claim/Reject
         [HttpPost]
-        public IActionResult Reject(int claimId)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reject(int claimId)
         {
-            var claim = claims.FirstOrDefault(c => c.ClaimId == claimId);
+            var claim = await _context.Claims.FindAsync(claimId);
             if (claim != null)
             {
                 claim.Status = "Rejected"; // Set the claim status to Rejected
+                await _context.SaveChangesAsync(); // Save changes to the database
             }
-            return RedirectToAction("Coordinators");
+            return RedirectToAction(nameof(Coordinators));
         }
     }
 }
