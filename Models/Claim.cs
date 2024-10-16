@@ -6,7 +6,9 @@
         public string LecturerNumber { get; set; }
         public double HoursWorked { get; set; }
         public double HourlyRate { get; set; }
-        public string SupportingDocument { get; set; }
         public string Status { get; set; } // "Pending", "Approved", "Rejected"
+
+        // Navigation property for related ClaimFiles
+        public ICollection<ClaimFile> ClaimFiles { get; set; } = new List<ClaimFile>(); // Ensure initialization
     }
 }

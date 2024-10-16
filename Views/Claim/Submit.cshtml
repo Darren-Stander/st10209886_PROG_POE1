@@ -94,9 +94,10 @@
             <input asp-for="HourlyRate" class="form-control" />
         </div>
 
+        <!-- Remove asp-for="SupportingDocument" since it does not exist in the model -->
         <div class="form-group">
-            <label asp-for="SupportingDocument">Supporting Document (pdf, docx, xlsx)</label>
-            <input asp-for="SupportingDocument" type="file" class="form-control" accept=".pdf,.docx,.xlsx" id="fileUpload" required />
+            <label>Supporting Document (pdf, docx, xlsx)</label>
+            <input type="file" class="form-control" accept=".pdf,.docx,.xlsx" id="fileUpload" name="supportingDocument" required />
             <div id="uploadedFileName"></div>
             <div id="errorMessage"></div>
         </div>

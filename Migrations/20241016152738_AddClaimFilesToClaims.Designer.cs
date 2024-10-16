@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using st10209886_PROG_POE1.Models;
 
@@ -10,9 +11,11 @@ using st10209886_PROG_POE1.Models;
 namespace st10209886_PROG_POE1.Migrations
 {
     [DbContext(typeof(ClaimContext))]
-    partial class ClaimContextModelSnapshot : ModelSnapshot
+    [Migration("20241016152738_AddClaimFilesToClaims")]
+    partial class AddClaimFilesToClaims
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

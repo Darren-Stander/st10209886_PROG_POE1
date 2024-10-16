@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using st10209886_PROG_POE1.Models;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,41 +26,73 @@ namespace st10209886_PROG_POE1.Controllers
         // POST: Claims/Submit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Submit(Claim claim)
+        public async Task<IActionResult> Submit(Claim claim, IFormFile supportingDocument)
         {
             if (ModelState.IsValid)
             {
                 claim.Status = "Pending"; // Automatically set to Pending when submitted
-                _context.Add(claim); // Adds the new claim to the DbContext
-                await _context.SaveChangesAsync(); // Saves the new claim to the database
-                return RedirectToAction(nameof(Coordinators)); // Redirect to the list of claims
+
+                // Save the claim to the database first
+                _context.Add(claim);
+                await _context.SaveChangesAsync();
+
+                // Handle file upload (if there is one)
+                if (supportingDocument != null && supportingDocument.Length > 0)
+                {
+                    var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+                    // Ensure the upload directory exists
+                    if (!Directory.Exists(uploadPath))
+                    {
+                        Directory.CreateDirectory(uploadPath);
+                    }
+
+                    var fileName = Path.GetFileName(supportingDocument.FileName);
+                    var filePath = Path.Combine(uploadPath, fileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await supportingDocument.CopyToAsync(fileStream);
+                    }
+
+                    // Save the file info in the ClaimFiles table
+                    var claimFile = new ClaimFile
+                    {
+                        FileName = fileName,
+                        FilePath = filePath,
+                        ClaimId = claim.ClaimId // Associate the file with the claim
+                    };
+
+                    _context.ClaimFiles.Add(claimFile);
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction(nameof(Coordinators));
             }
 
-            // If the model is invalid, log the errors (optional)
-            var errors = ModelState.Values.SelectMany(v => v.Errors);
-            foreach (var error in errors)
-            {
-                System.Diagnostics.Debug.WriteLine(error.ErrorMessage); // Log errors for debugging
-            }
-
-            // Return the form view with validation errors
-            return View(claim);
+            return View(claim); // If the model state is invalid, return the form with validation errors
         }
 
-        // GET: Claims/History
+        // GET: Claim/History - Display all claims with their files
         public async Task<IActionResult> History()
         {
-            // Return all claims
-            var allClaims = await _context.Claims.ToListAsync();
+            // Return all claims, including the associated files
+            var allClaims = await _context.Claims
+                .Include(c => c.ClaimFiles) // Include files
+                .ToListAsync();
+
             return View(allClaims);
         }
 
-        // GET: Claim/Coordinators - View pending claims
+        // GET: Claim/Coordinators - Display all pending claims with their files
         public async Task<IActionResult> Coordinators()
         {
-            // Get all pending claims from the database
-            var pendingClaims = await _context.Claims.Where(c => c.Status == "Pending").ToListAsync();
-            return View(pendingClaims);
+            // Fetch all pending claims and include the associated files
+            var pendingClaims = await _context.Claims
+                .Include(c => c.ClaimFiles) // Include related files
+                .Where(c => c.Status == "Pending").ToListAsync();
+
+            return View(pendingClaims); // Pass the pending claims to the view
         }
 
         // POST: Claim/Approve
@@ -70,10 +103,10 @@ namespace st10209886_PROG_POE1.Controllers
             var claim = await _context.Claims.FindAsync(claimId);
             if (claim != null)
             {
-                claim.Status = "Approved"; // Set the claim status to Approved
-                await _context.SaveChangesAsync(); // Save changes to the database
+                claim.Status = "Approved"; // Mark as approved
+                await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Coordinators));
+            return RedirectToAction(nameof(Coordinators)); // Return to the list
         }
 
         // POST: Claim/Reject
@@ -84,10 +117,10 @@ namespace st10209886_PROG_POE1.Controllers
             var claim = await _context.Claims.FindAsync(claimId);
             if (claim != null)
             {
-                claim.Status = "Rejected"; // Set the claim status to Rejected
-                await _context.SaveChangesAsync(); // Save changes to the database
+                claim.Status = "Rejected"; // Mark as rejected
+                await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Coordinators));
+            return RedirectToAction(nameof(Coordinators)); // Return to the list
         }
     }
 }
