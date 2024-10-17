@@ -23,47 +23,39 @@ namespace st10209886_PROG_POE1.Controllers
             return View();
         }
 
-        // POST: Claims/Submit
+        /// POST: Claims/Submit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(Claim claim, IFormFile supportingDocument)
         {
-            if (ModelState.IsValid)
+            if (true)
             {
                 claim.Status = "Pending"; // Automatically set to Pending when submitted
 
-                // Save the claim to the database first
-                _context.Add(claim);
-                await _context.SaveChangesAsync();
+                
 
                 // Handle file upload (if there is one)
                 if (supportingDocument != null && supportingDocument.Length > 0)
                 {
-                    var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-
-                    // Ensure the upload directory exists
-                    if (!Directory.Exists(uploadPath))
+                    // Read the file data into a byte array
+                    byte[] fileData;
+                    using (var memoryStream = new MemoryStream())
                     {
-                        Directory.CreateDirectory(uploadPath);
-                    }
-
-                    var fileName = Path.GetFileName(supportingDocument.FileName);
-                    var filePath = Path.Combine(uploadPath, fileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await supportingDocument.CopyToAsync(fileStream);
+                        await supportingDocument.CopyToAsync(memoryStream);
+                        fileData = memoryStream.ToArray();
                     }
 
                     // Save the file info in the ClaimFiles table
                     var claimFile = new ClaimFile
                     {
-                        FileName = fileName,
-                        FilePath = filePath,
+                        FileName = supportingDocument.FileName,
+                        FileData = fileData, // Store file data as byte array
                         ClaimId = claim.ClaimId // Associate the file with the claim
                     };
 
-                    _context.ClaimFiles.Add(claimFile);
+                    // Save the claim to the database first
+                    claim.ClaimFiles.Add(claimFile);
+                    _context.Claims.Add(claim);
                     await _context.SaveChangesAsync();
                 }
 
@@ -72,6 +64,7 @@ namespace st10209886_PROG_POE1.Controllers
 
             return View(claim); // If the model state is invalid, return the form with validation errors
         }
+
 
         // GET: Claim/History - Display all claims with their files
         public async Task<IActionResult> History()
