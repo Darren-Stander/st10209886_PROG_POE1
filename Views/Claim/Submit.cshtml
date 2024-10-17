@@ -91,22 +91,22 @@
         <!-- LecturerNumber Field - Only numeric input allowed -->
         <div class="form-group">
             <label asp-for="LecturerNumber"></label>
-            <input asp-for="LecturerNumber" class="form-control" type="text" id="lecturerNumber" required />
+            <input asp-for="LecturerNumber" class="form-control" type="text" id="lecturerNumber" required placeholder="Enter your Lecturer Number (numbers only)" />
             <div class="popup-message" id="lecturerNumberPopup">Only numbers are allowed for Lecturer Number.</div>
         </div>
 
         <!-- HoursWorked Field - Only numeric input allowed -->
         <div class="form-group">
             <label asp-for="HoursWorked"></label>
-            <input asp-for="HoursWorked" class="form-control" type="text" id="hoursWorked" required />
-            <div class="popup-message" id="hoursWorkedPopup">Only numbers are allowed for Hours Worked.</div>
+            <input asp-for="HoursWorked" class="form-control" type="text" id="hoursWorked" required placeholder="Enter Hours Worked (numbers and decimals allowed)" />
+            <div class="popup-message" id="hoursWorkedPopup">Only numbers and decimals are allowed for Hours Worked.</div>
         </div>
 
         <!-- HourlyRate Field - Only numeric input allowed -->
         <div class="form-group">
             <label asp-for="HourlyRate"></label>
-            <input asp-for="HourlyRate" class="form-control" type="text" id="hourlyRate" required />
-            <div class="popup-message" id="hourlyRatePopup">Only numbers are allowed for Hourly Rate.</div>
+            <input asp-for="HourlyRate" class="form-control" type="text" id="hourlyRate" required placeholder="Enter Hourly Rate (numbers and decimals allowed)" />
+            <div class="popup-message" id="hourlyRatePopup">Only numbers and decimals are allowed for Hourly Rate.</div>
         </div>
 
         <!-- Additional Notes Field -->
