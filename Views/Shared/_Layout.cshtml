@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/st10209886_PROG_POE1.styles.css" asp-append-version="true" />
-
 </head>
 <body>
     <header>
@@ -19,10 +18,11 @@
                         <a class="nav-link" href="/Claim/Submit">Submit Claim</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Claim/History">View History</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/Claim/Coordinators">Coordinators</a>
+                    </li>
+                    <!-- New link for Claim Status -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Claim/ClaimStatus">Claim Status</a>
                     </li>
                 </ul>
             </div>
@@ -45,4 +45,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
