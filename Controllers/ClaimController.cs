@@ -28,43 +28,50 @@ namespace st10209886_PROG_POE1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(Claim claim, IFormFile supportingDocument)
         {
-            if (true)
+            // Server-side validation to ensure LecturerNumber, HoursWorked, and HourlyRate are not null/empty and are numeric
+            if (string.IsNullOrWhiteSpace(claim.LecturerNumber) || claim.HoursWorked <= 0 || claim.HourlyRate <= 0)
             {
-                claim.Status = "Pending"; // Automatically set to Pending when submitted
-
-                
-
-                // Handle file upload (if there is one)
-                if (supportingDocument != null && supportingDocument.Length > 0)
-                {
-                    // Read the file data into a byte array
-                    byte[] fileData;
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        await supportingDocument.CopyToAsync(memoryStream);
-                        fileData = memoryStream.ToArray();
-                    }
-
-                    // Save the file info in the ClaimFiles table
-                    var claimFile = new ClaimFile
-                    {
-                        FileName = supportingDocument.FileName,
-                        FileData = fileData, // Store file data as byte array
-                        ClaimId = claim.ClaimId // Associate the file with the claim
-                    };
-
-                    // Save the claim to the database first
-                    claim.ClaimFiles.Add(claimFile);
-                    _context.Claims.Add(claim);
-                    await _context.SaveChangesAsync();
-                }
-
-                return RedirectToAction(nameof(Coordinators));
+                ModelState.AddModelError(string.Empty, "Please ensure all fields are filled with valid numeric values.");
+                return View(claim);
             }
 
-            return View(claim); // If the model state is invalid, return the form with validation errors
-        }
+            // Validate AdditionalNotes - only letters, numbers, and spaces allowed (A-Z, a-z, 0-9)
+            if (!string.IsNullOrEmpty(claim.AdditionalNotes) && !System.Text.RegularExpressions.Regex.IsMatch(claim.AdditionalNotes, @"^[a-zA-Z0-9\s]+$"))
+            {
+                ModelState.AddModelError("AdditionalNotes", "Additional Notes can only contain letters, numbers, and spaces.");
+                return View(claim);
+            }
 
+            claim.Status = "Pending"; // Automatically set to Pending when submitted
+
+            // Handle file upload (if there is one)
+            if (supportingDocument != null && supportingDocument.Length > 0)
+            {
+                byte[] fileData;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await supportingDocument.CopyToAsync(memoryStream);
+                    fileData = memoryStream.ToArray();
+                }
+
+                // Save the file info in the ClaimFiles table
+                var claimFile = new ClaimFile
+                {
+                    FileName = supportingDocument.FileName,
+                    FileData = fileData, // Store file data as byte array
+                    ClaimId = claim.ClaimId // Associate the file with the claim
+                };
+
+                // Add the claim and its files
+                claim.ClaimFiles.Add(claimFile);
+            }
+
+            // Save the claim to the database
+            _context.Claims.Add(claim);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Coordinators));
+        }
 
         // GET: Claim/History - Display all claims with their files
         public async Task<IActionResult> History()

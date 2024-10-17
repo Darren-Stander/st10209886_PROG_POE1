@@ -1,7 +1,6 @@
 ﻿@model st10209886_PROG_POE1.Models.Claim
 
 <style>
-    /* The same styling as provided earlier */
     body {
         font-family: 'Arial', sans-serif;
     }
@@ -18,6 +17,7 @@
 
     .form-group {
         margin-bottom: 20px;
+        position: relative; /* Ensures popups are positioned relative to the field */
     }
 
     label {
@@ -61,15 +61,25 @@
             color: #333;
         }
 
-    #uploadedFileName {
-        margin-top: 10px;
-        color: green;
+    /* Styling for the pop-up validation message */
+    .popup-message {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        padding: 5px 10px;
+        font-size: 14px;
+        white-space: nowrap;
+        z-index: 100;
     }
 
-    #errorMessage {
-        color: red;
-        margin-top: 10px;
-    }
+        .popup-message.show {
+            display: block;
+        }
 </style>
 
 <div class="form-container">
@@ -77,60 +87,95 @@
         <h2>Submit Your Claim</h2>
     </div>
 
-    <!-- Adding enctype for file uploads -->
     <form asp-action="Submit" method="post" enctype="multipart/form-data">
+        <!-- LecturerNumber Field - Only numeric input allowed -->
         <div class="form-group">
             <label asp-for="LecturerNumber"></label>
-            <input asp-for="LecturerNumber" class="form-control" />
+            <input asp-for="LecturerNumber" class="form-control" type="text" id="lecturerNumber" required />
+            <div class="popup-message" id="lecturerNumberPopup">Only numbers are allowed for Lecturer Number.</div>
         </div>
 
+        <!-- HoursWorked Field - Only numeric input allowed -->
         <div class="form-group">
             <label asp-for="HoursWorked"></label>
-            <input asp-for="HoursWorked" class="form-control" />
+            <input asp-for="HoursWorked" class="form-control" type="text" id="hoursWorked" required />
+            <div class="popup-message" id="hoursWorkedPopup">Only numbers are allowed for Hours Worked.</div>
         </div>
 
+        <!-- HourlyRate Field - Only numeric input allowed -->
         <div class="form-group">
             <label asp-for="HourlyRate"></label>
-            <input asp-for="HourlyRate" class="form-control" />
+            <input asp-for="HourlyRate" class="form-control" type="text" id="hourlyRate" required />
+            <div class="popup-message" id="hourlyRatePopup">Only numbers are allowed for Hourly Rate.</div>
         </div>
 
-        <!-- Remove asp-for="SupportingDocument" since it does not exist in the model -->
+        <!-- Additional Notes Field -->
+        <div class="form-group">
+            <label asp-for="AdditionalNotes">Additional Notes</label>
+            <input asp-for="AdditionalNotes" class="form-control" id="additionalNotes" placeholder="Add additional notes here (letters and numbers only)" />
+            <div class="popup-message" id="additionalNotesPopup">Additional Notes can only contain letters, numbers, and spaces.</div>
+        </div>
+
+        <!-- File Upload -->
         <div class="form-group">
             <label>Supporting Document (pdf, docx, xlsx)</label>
             <input type="file" class="form-control" accept=".pdf,.docx,.xlsx" id="fileUpload" name="supportingDocument" required />
-            <div id="uploadedFileName"></div>
-            <div id="errorMessage"></div>
         </div>
 
         <button type="submit">Submit Claim</button>
     </form>
 </div>
 
-<!-- JavaScript for validating file size and type -->
+<!-- JavaScript for real-time validation and pop-up messages -->
 <script>
-    const fileUpload = document.getElementById('fileUpload');
-    const uploadedFileName = document.getElementById('uploadedFileName');
-    const errorMessage = document.getElementById('errorMessage');
+    // Function to show the pop-up message next to the input field
+    function showPopup(popupElement) {
+        popupElement.classList.add("show");
+    }
 
-    fileUpload.addEventListener('change', function () {
-        const file = fileUpload.files[0];
-        const allowedFileTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-        const maxSize = 5 * 1024 * 1024; // 5 MB
+    // Function to hide the pop-up message
+    function hidePopup(popupElement) {
+        popupElement.classList.remove("show");
+    }
 
-        // Reset messages
-        uploadedFileName.textContent = '';
-        errorMessage.textContent = '';
+    // Real-time validation for LecturerNumber, HoursWorked, HourlyRate, and Additional Notes
+    document.getElementById('lecturerNumber').addEventListener('input', function (e) {
+        const input = e.target.value;
+        const popup = document.getElementById('lecturerNumberPopup');
+        if (/[^0-9]/.test(input)) {  // Allow only numbers, but do not prevent letters from being typed
+            showPopup(popup);
+        } else {
+            hidePopup(popup);
+        }
+    });
 
-        if (file) {
-            if (!allowedFileTypes.includes(file.type)) {
-                errorMessage.textContent = 'Invalid file type. Please upload a .pdf, .docx, or .xlsx file.';
-                fileUpload.value = ''; // Reset the file input
-            } else if (file.size > maxSize) {
-                errorMessage.textContent = 'File size exceeds the 5 MB limit.';
-                fileUpload.value = ''; // Reset the file input
-            } else {
-                uploadedFileName.textContent = `Uploaded file: ${file.name}`;
-            }
+    document.getElementById('hoursWorked').addEventListener('input', function (e) {
+        const input = e.target.value;
+        const popup = document.getElementById('hoursWorkedPopup');
+        if (/[^0-9.]/.test(input)) {  // Allow only numbers and decimal points, but do not prevent letters from being typed
+            showPopup(popup);
+        } else {
+            hidePopup(popup);
+        }
+    });
+
+    document.getElementById('hourlyRate').addEventListener('input', function (e) {
+        const input = e.target.value;
+        const popup = document.getElementById('hourlyRatePopup');
+        if (/[^0-9.]/.test(input)) {  // Allow only numbers and decimal points
+            showPopup(popup);
+        } else {
+            hidePopup(popup);
+        }
+    });
+
+    document.getElementById('additionalNotes').addEventListener('input', function (e) {
+        const input = e.target.value;
+        const popup = document.getElementById('additionalNotesPopup');
+        if (/[^a-zA-Z0-9\s]/.test(input)) {  // Allow only letters, numbers, and spaces
+            showPopup(popup);
+        } else {
+            hidePopup(popup);
         }
     });
 </script>
