@@ -8,6 +8,8 @@
         public double HourlyRate { get; set; }
         public string Status { get; set; } // "Pending", "Approved", "Rejected"
 
+        public string AdditionalNotes { get; set; } // Alphanumeric field for notes
+
         // Navigation property for related ClaimFiles
         public ICollection<ClaimFile> ClaimFiles { get; set; } = new List<ClaimFile>(); // Ensure initialization
     }
