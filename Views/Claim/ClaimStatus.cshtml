@@ -7,41 +7,24 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Lecturer Number</th>  <!-- Add Lecturer Number Header -->
             <th>Hours Worked</th>
             <th>Hourly Rate</th>
             <th>Total Claim</th>
             <th>Status</th>
             <th>Submission Date</th>
-            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var claim in Model)
         {
             <tr>
+                <td>@claim.LecturerNumber</td>  <!-- Add Lecturer Number Data -->
                 <td>@claim.HoursWorked</td>
                 <td>@claim.HourlyRate</td>
                 <td>@(claim.HoursWorked * claim.HourlyRate)</td> <!-- Calculating total claim -->
                 <td>@claim.Status</td>
                 <td>@DateTime.Now.ToShortDateString()</td> <!-- Assuming the submission date is now -->
-                <td>
-                    @if (claim.Status == "Pending")
-                    {
-                        <!-- Add buttons to approve/reject the claim -->
-                        <form asp-action="Approve" asp-controller="Claim" method="post">
-                            <input type="hidden" name="claimId" value="@claim.ClaimId" />
-                            <button type="submit" class="btn btn-success">Approve</button>
-                        </form>
-                        <form asp-action="Reject" asp-controller="Claim" method="post" style="margin-top:5px;">
-                            <input type="hidden" name="claimId" value="@claim.ClaimId" />
-                            <button type="submit" class="btn btn-danger">Reject</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <span>No Actions Available</span>
-                    }
-                </td>
             </tr>
         }
     </tbody>
