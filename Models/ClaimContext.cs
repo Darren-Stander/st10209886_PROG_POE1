@@ -10,3 +10,4 @@ public class ClaimContext : DbContext
     public DbSet<Claim> Claims { get; set; }
     public DbSet<ClaimFile> ClaimFiles { get; set; } // Ensure this line is here
 }
+/////////////////////////////////////////////////END OF FILE/////////////////////////////////////////////////

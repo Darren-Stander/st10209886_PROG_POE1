@@ -16,4 +16,5 @@ namespace st10209886_PROG_POE1.Models
             public Claim Claim { get; set; } // Navigation property to Claim
         }
     }
+/////////////////////////////////////////////////END OF FILE/////////////////////////////////////////////////
 

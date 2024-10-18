@@ -14,3 +14,4 @@
         public ICollection<ClaimFile> ClaimFiles { get; set; } = new List<ClaimFile>(); // Ensure initialization
     }
 }
+/////////////////////////////////////////////////END OF FILE/////////////////////////////////////////////////
