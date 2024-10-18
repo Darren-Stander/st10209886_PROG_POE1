@@ -28,20 +28,25 @@ namespace st10209886_PROG_POE1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(Claim claim, IFormFile supportingDocument)
         {
+            // Validate required fields (LecturerNumber, HoursWorked, HourlyRate)
             if (string.IsNullOrWhiteSpace(claim.LecturerNumber) || claim.HoursWorked <= 0 || claim.HourlyRate <= 0)
             {
                 ModelState.AddModelError(string.Empty, "Please ensure all fields are filled with valid numeric values.");
                 return View(claim);
             }
 
-            if (!string.IsNullOrEmpty(claim.AdditionalNotes) && !System.Text.RegularExpressions.Regex.IsMatch(claim.AdditionalNotes, @"^[a-zA-Z0-9\s]+$"))
+            // Check AdditionalNotes only if it is not null or empty
+            if (!string.IsNullOrEmpty(claim.AdditionalNotes) &&
+                !System.Text.RegularExpressions.Regex.IsMatch(claim.AdditionalNotes, @"^[a-zA-Z0-9\s]+$"))
             {
                 ModelState.AddModelError("AdditionalNotes", "Additional Notes can only contain letters, numbers, and spaces.");
                 return View(claim);
             }
 
-            claim.Status = "Pending"; // Automatically set to Pending when submitted
+            // Automatically set the status to "Pending" when submitting
+            claim.Status = "Pending";
 
+            // Handle the supporting document if it's provided
             if (supportingDocument != null && supportingDocument.Length > 0)
             {
                 byte[] fileData;
@@ -51,6 +56,7 @@ namespace st10209886_PROG_POE1.Controllers
                     fileData = memoryStream.ToArray();
                 }
 
+                // Create the ClaimFile object and associate it with the claim
                 var claimFile = new ClaimFile
                 {
                     FileName = supportingDocument.FileName,
@@ -61,11 +67,14 @@ namespace st10209886_PROG_POE1.Controllers
                 claim.ClaimFiles.Add(claimFile);
             }
 
+            // Add the claim to the context and save changes
             _context.Claims.Add(claim);
             await _context.SaveChangesAsync();
 
+            // Redirect to the Coordinators page
             return RedirectToAction(nameof(Coordinators));
         }
+
 
         // GET: Claim/History - Display all claims with their files
         public async Task<IActionResult> History()
