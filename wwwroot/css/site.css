@@ -1,112 +1,99 @@
-html {
-    font-size: 14px;
-}
-
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-    position: relative;
-    min-height: 100%;
-}
-
-body {
-    margin-bottom: 60px;
-}
-
-/* Add the new Claim Status Table Styling below this line */
-
-/* General body styling for better readability */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f9fafb; /* Soft background color */
-    color: #333;
+    background-color: #3a3a3a;
+    color: #ffffff;
     line-height: 1.6;
 }
 
-/* Table styling */
+.form-container {
+    width: 60%;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #333333;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+    color: #333333;
+}
+
+input[type="text"], input[type="number"], input[type="file"], textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #333333;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+    button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+
 .table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
-    font-size: 16px; /* Reduced for better readability */
-    background-color: #ffffff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    font-size: 16px;
+    background-color: #4a4a4a;
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
     .table th, .table td {
-        padding: 14px 20px; /* Generous padding for a clean layout */
-        border: 1px solid #e0e0e0; /* Light border */
+        padding: 14px 20px;
+        border: 1px solid #666;
         text-align: left;
+        color: #ffffff;
     }
 
     .table th {
-        background-color: #4a90e2; /* Soft blue header */
-        color: #fff;
+        background-color: #555;
+        color: #ffffff;
         text-transform: uppercase;
         font-size: 14px;
         letter-spacing: 0.05em;
-        border-bottom: 2px solid #d0d0d0;
+        border-bottom: 2px solid #777;
     }
 
     .table tr {
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid #666;
     }
 
         .table tr:hover {
-            background-color: #f1f5f9; /* Soft hover effect */
+            background-color: #5a5a5a;
         }
 
-        /* Alternate row coloring */
         .table tr:nth-of-type(even) {
-            background-color: #f9fafb;
+            background-color: #4f4f4f;
         }
 
-    /* Total claim column styled distinctly */
-    .table td:nth-child(3) {
-        font-weight: 600;
-        color: #2e7d32; /* Soft green for total claim */
+a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+    a:hover {
+        color: #ccc;
     }
 
-    /* Status column styling */
-    .table td:nth-child(4) {
-        font-weight: bold;
-        padding: 10px 16px;
-        border-radius: 5px;
-        text-align: center;
-        background-color: #e8f0fe; /* Light background for status */
-    }
-
-        .table td:nth-child(4):contains("Approved") {
-            background-color: #81c784; /* Soft green for approved */
-            color: white;
-        }
-
-        .table td:nth-child(4):contains("Rejected") {
-            background-color: #e57373; /* Soft red for rejected */
-            color: white;
-        }
-
-        .table td:nth-child(4):contains("Pending") {
-            background-color: #ffeb3b; /* Soft yellow for pending */
-            color: #000;
-        }
-
-    /* Centering and styling the submission date */
-    .table td:nth-child(5) {
-        text-align: center;
-        font-size: 14px;
-        color: #616161;
-    }
-
-/* Button styling for approval/rejection (if used in the future) */
 .btn {
     padding: 8px 16px;
     font-size: 14px;
@@ -114,27 +101,28 @@ body {
     transition: background-color 0.3s ease;
     cursor: pointer;
     border: none;
+    color: white;
 }
 
 .btn-success {
     background-color: #81c784;
-    color: #fff;
 }
 
 .btn-danger {
     background-color: #e57373;
-    color: #fff;
 }
 
-/* Hover effect for buttons */
 .btn:hover {
     opacity: 0.85;
 }
 
-/* Responsive layout */
 @media screen and (max-width: 768px) {
     .table, .table th, .table td {
         font-size: 14px;
         padding: 10px 12px;
+    }
+
+    .form-container {
+        width: 90%;
     }
 }
