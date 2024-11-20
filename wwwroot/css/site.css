@@ -95,25 +95,30 @@ a {
     }
 
 .btn {
-    padding: 8px 16px;
+    padding: 6px 12px;
     font-size: 14px;
     border-radius: 4px;
-    transition: background-color 0.3s ease;
     cursor: pointer;
     border: none;
     color: white;
+    margin-right: 10px;
+    display: inline-block;
 }
 
 .btn-success {
-    background-color: #81c784;
+    background-color: #28a745;
 }
 
 .btn-danger {
-    background-color: #e57373;
+    background-color: #dc3545;
 }
 
-.btn:hover {
-    opacity: 0.85;
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
 }
 
 @media screen and (max-width: 768px) {

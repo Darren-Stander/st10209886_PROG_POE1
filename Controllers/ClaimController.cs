@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using st10209886_PROG_POE1.Models;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace st10209886_PROG_POE1.Controllers
 {
+    [Authorize] // Ensure only authenticated users can access any actions
     public class ClaimController : Controller
     {
         private readonly ClaimContext _context;
@@ -17,15 +19,17 @@ namespace st10209886_PROG_POE1.Controllers
             _context = context;
         }
 
-        // GET: Claims/Submit
+        // GET: Claims/Submit - Only accessible by Lecturers
+        [Authorize(Roles = "Lecturer")]
         public IActionResult Submit()
         {
             return View();
         }
 
-        /// POST: Claims/Submit
+        // POST: Claims/Submit - Only accessible by Lecturers
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Lecturer")]
         public async Task<IActionResult> Submit(Claim claim, IFormFile supportingDocument)
         {
             // Validate required fields (LecturerNumber, HoursWorked, HourlyRate)
@@ -35,18 +39,10 @@ namespace st10209886_PROG_POE1.Controllers
                 return View(claim);
             }
 
-            // Check AdditionalNotes only if it is not null or empty
-            if (!string.IsNullOrEmpty(claim.AdditionalNotes) &&
-                !System.Text.RegularExpressions.Regex.IsMatch(claim.AdditionalNotes, @"^[a-zA-Z0-9\s]+$"))
-            {
-                ModelState.AddModelError("AdditionalNotes", "Additional Notes can only contain letters, numbers, and spaces.");
-                return View(claim);
-            }
-
             // Automatically set the status to "Pending" when submitting
             claim.Status = "Pending";
 
-            // Handle the supporting document if it's provided
+            // Handle the supporting document if provided
             if (supportingDocument != null && supportingDocument.Length > 0)
             {
                 byte[] fileData;
@@ -60,77 +56,90 @@ namespace st10209886_PROG_POE1.Controllers
                 var claimFile = new ClaimFile
                 {
                     FileName = supportingDocument.FileName,
-                    FileData = fileData, // Store file data as byte array
-                    ClaimId = claim.ClaimId // Associate the file with the claim
+                    FileData = fileData,
                 };
 
                 claim.ClaimFiles.Add(claimFile);
             }
 
-            // Add the claim to the context and save changes
+            // Add the claim to the database and save changes
             _context.Claims.Add(claim);
             await _context.SaveChangesAsync();
 
-            // Redirect to the Coordinators page
+            // Redirect to the Coordinators page after submission
             return RedirectToAction(nameof(Coordinators));
         }
 
-
-        // GET: Claim/History - Display all claims with their files
+        // GET: Claim/History - Display claim history for all roles
         public async Task<IActionResult> History()
         {
             var allClaims = await _context.Claims
-                .Include(c => c.ClaimFiles) // Include files
+                .Include(c => c.ClaimFiles)
                 .ToListAsync();
 
             return View(allClaims);
         }
 
-        // GET: Claim/ClaimStatus - Display all claims with their current status
+        // GET: Claim/ClaimStatus - Only accessible by HR
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> ClaimStatus()
         {
             // Fetch all claims from the database
             var allClaims = await _context.Claims.ToListAsync();
-            return View(allClaims); // Pass the claims to the view
+            return View(allClaims);
         }
 
-        // GET: Claim/Coordinators - Display all pending claims with their files
+        // GET: Claim/Coordinators - Only accessible by Coordinators
+        [Authorize(Roles = "Coordinator")]
         public async Task<IActionResult> Coordinators()
         {
             var pendingClaims = await _context.Claims
-                .Include(c => c.ClaimFiles) // Include related files
-                .Where(c => c.Status == "Pending").ToListAsync();
+                .Include(c => c.ClaimFiles)
+                .Where(c => c.Status == "Pending")
+                .ToListAsync();
 
             return View(pendingClaims);
         }
 
-        // POST: Claim/Approve
+        // POST: Claim/Approve - Only accessible by Coordinators
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Coordinator")]
         public async Task<IActionResult> Approve(int claimId)
         {
             var claim = await _context.Claims.FindAsync(claimId);
             if (claim != null)
             {
-                claim.Status = "Approved"; // Mark as approved
+                claim.Status = "Approved";
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Coordinators));
         }
 
-        // POST: Claim/Reject
+        // POST: Claim/Reject - Only accessible by Coordinators
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Coordinator")]
         public async Task<IActionResult> Reject(int claimId)
         {
             var claim = await _context.Claims.FindAsync(claimId);
             if (claim != null)
             {
-                claim.Status = "Rejected"; // Mark as rejected
+                claim.Status = "Rejected";
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Coordinators));
         }
+
+        // Optional: Download supporting documents
+        [HttpGet]
+        public async Task<IActionResult> DownloadFile(int fileId)
+        {
+            var file = await _context.ClaimFiles.FindAsync(fileId);
+            if (file == null)
+                return NotFound();
+
+            return File(file.FileData, "application/octet-stream", file.FileName);
+        }
     }
 }
-/////////////////////////////////////////////////END OF FILE/////////////////////////////////////////////////

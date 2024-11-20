@@ -6,12 +6,25 @@
     <h1 class="display-4">Welcome</h1>
     <p>Select your role to proceed:</p>
 
-    <!-- Buttons to navigate to Lecturer Submit and Coordinator pages -->
-    <div class="mt-4">
-        <!-- Lecturer Button -->
-        <a class="btn btn-primary btn-lg mx-2" href="/Claim/Submit">Lecturer</a>
-
-        <!-- Coordinators Button -->
-        <a class="btn btn-secondary btn-lg mx-2" href="/Claim/Coordinators">Coordinators</a>
-    </div>
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <a class="btn btn-warning btn-lg mx-2" href="/Login/Index">Login</a>
+    }
+    else
+    {
+        <div class="mt-4">
+            @if (User.IsInRole("Lecturer"))
+            {
+                <a class="btn btn-primary btn-lg mx-2" href="/Claim/Submit">Lecturer</a>
+            }
+            @if (User.IsInRole("Coordinator"))
+            {
+                <a class="btn btn-secondary btn-lg mx-2" href="/Claim/Coordinators">Coordinator</a>
+            }
+            @if (User.IsInRole("HR"))
+            {
+                <a class="btn btn-success btn-lg mx-2" href="/Claim/ClaimStatus">HR</a>
+            }
+        </div>
+    }
 </div>
