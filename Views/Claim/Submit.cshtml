@@ -1,181 +1,46 @@
 ﻿@model st10209886_PROG_POE1.Models.Claim
 
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-    }
-
-    .form-container {
-        width: 50%;
-        margin: 50px auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        background-color: #f9f9f9;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-        position: relative; /* Ensures popups are positioned relative to the field */
-    }
-
-    label {
-        font-weight: bold;
-        margin-bottom: 10px;
-        display: block;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="file"] {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-sizing: border-box;
-    }
-
-    button[type="submit"] {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-    .form-header {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-        .form-header h2 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
-        }
-
-    /* Styling for the pop-up validation message */
-    .popup-message {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-        border-radius: 5px;
-        padding: 5px 10px;
-        font-size: 14px;
-        white-space: nowrap;
-        z-index: 100;
-    }
-
-        .popup-message.show {
-            display: block;
-        }
-</style>
-
-<div class="form-container">
-    <div class="form-header">
-        <h2>Submit Your Claim</h2>
-    </div>
+<div class="container mt-5">
+    <h2 class="text-center">Submit Your Claim</h2>
 
     <form asp-action="Submit" method="post" enctype="multipart/form-data">
-        <!-- LecturerNumber Field - Only numeric input allowed -->
+        @Html.AntiForgeryToken()
+
+        <!-- Lecturer Number -->
         <div class="form-group">
-            <label asp-for="LecturerNumber"></label>
-            <input asp-for="LecturerNumber" class="form-control" type="text" id="lecturerNumber" required placeholder="Enter your Lecturer Number (numbers only)" />
-            <div class="popup-message" id="lecturerNumberPopup">Only numbers are allowed for Lecturer Number.</div>
+            <label asp-for="LecturerNumber">Lecturer Number</label>
+            <input asp-for="LecturerNumber" class="form-control bg-dark text-light" placeholder="Enter your Lecturer Number" />
+            <span asp-validation-for="LecturerNumber" class="text-danger"></span>
         </div>
 
-        <!-- HoursWorked Field - Only numeric input allowed -->
+        <!-- Hours Worked -->
         <div class="form-group">
-            <label asp-for="HoursWorked"></label>
-            <input asp-for="HoursWorked" class="form-control" type="text" id="hoursWorked" required placeholder="Enter Hours Worked (numbers and decimals allowed)" />
-            <div class="popup-message" id="hoursWorkedPopup">Only numbers and decimals are allowed for Hours Worked.</div>
+            <label asp-for="HoursWorked">Hours Worked</label>
+            <input asp-for="HoursWorked" class="form-control bg-dark text-light" placeholder="Enter the hours worked" />
+            <span asp-validation-for="HoursWorked" class="text-danger"></span>
         </div>
 
-        <!-- HourlyRate Field - Only numeric input allowed -->
+        <!-- Hourly Rate -->
         <div class="form-group">
-            <label asp-for="HourlyRate"></label>
-            <input asp-for="HourlyRate" class="form-control" type="text" id="hourlyRate" required placeholder="Enter Hourly Rate (numbers and decimals allowed)" />
-            <div class="popup-message" id="hourlyRatePopup">Only numbers and decimals are allowed for Hourly Rate.</div>
+            <label asp-for="HourlyRate">Hourly Rate</label>
+            <input asp-for="HourlyRate" class="form-control bg-dark text-light" placeholder="Enter your hourly rate" />
+            <span asp-validation-for="HourlyRate" class="text-danger"></span>
         </div>
 
-        <!-- Additional Notes Field -->
+        <!-- Additional Notes -->
         <div class="form-group">
             <label asp-for="AdditionalNotes">Additional Notes</label>
-            <input asp-for="AdditionalNotes" class="form-control" id="additionalNotes" placeholder="Add additional notes here (letters and numbers only)" />
-            <div class="popup-message" id="additionalNotesPopup">Additional Notes can only contain letters, numbers, and spaces.</div>
+            <input asp-for="AdditionalNotes" class="form-control bg-dark text-light" placeholder="Add any additional notes" />
+            <span asp-validation-for="AdditionalNotes" class="text-danger"></span>
         </div>
 
         <!-- File Upload -->
         <div class="form-group">
-            <label>Supporting Document (pdf, docx, xlsx)</label>
-            <input type="file" class="form-control" accept=".pdf,.docx,.xlsx" id="fileUpload" name="supportingDocument" required />
+            <label for="supportingDocument">Upload Supporting Document</label>
+            <input type="file" class="form-control bg-dark text-light" id="supportingDocument" name="supportingDocument" />
         </div>
 
-        <button type="submit">Submit Claim</button>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-block">Submit Claim</button>
     </form>
 </div>
-
-<!-- JavaScript for real-time validation and pop-up messages -->
-<script>
-    // Function to show the pop-up message next to the input field
-    function showPopup(popupElement) {
-        popupElement.classList.add("show");
-    }
-
-    // Function to hide the pop-up message
-    function hidePopup(popupElement) {
-        popupElement.classList.remove("show");
-    }
-
-    // Real-time validation for LecturerNumber, HoursWorked, HourlyRate, and Additional Notes
-    document.getElementById('lecturerNumber').addEventListener('input', function (e) {
-        const input = e.target.value;
-        const popup = document.getElementById('lecturerNumberPopup');
-        if (/[^0-9]/.test(input)) {  // Allow only numbers, but do not prevent letters from being typed
-            showPopup(popup);
-        } else {
-            hidePopup(popup);
-        }
-    });
-
-    document.getElementById('hoursWorked').addEventListener('input', function (e) {
-        const input = e.target.value;
-        const popup = document.getElementById('hoursWorkedPopup');
-        if (/[^0-9.]/.test(input)) {  // Allow only numbers and decimal points, but do not prevent letters from being typed
-            showPopup(popup);
-        } else {
-            hidePopup(popup);
-        }
-    });
-
-    document.getElementById('hourlyRate').addEventListener('input', function (e) {
-        const input = e.target.value;
-        const popup = document.getElementById('hourlyRatePopup');
-        if (/[^0-9.]/.test(input)) {  // Allow only numbers and decimal points
-            showPopup(popup);
-        } else {
-            hidePopup(popup);
-        }
-    });
-
-    document.getElementById('additionalNotes').addEventListener('input', function (e) {
-        const input = e.target.value;
-        const popup = document.getElementById('additionalNotesPopup');
-        if (/[^a-zA-Z0-9\s]/.test(input)) {  // Allow only letters, numbers, and spaces
-            showPopup(popup);
-        } else {
-            hidePopup(popup);
-        }
-    });
-</script>

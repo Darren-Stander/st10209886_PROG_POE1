@@ -34,27 +34,24 @@ namespace st10209886_PROG_POE1.Controllers
                 return View();
             }
 
-            // Attempt to sign in
             var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
-                // Validate the user's role
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user != null && await _userManager.IsInRoleAsync(user, role))
                 {
-                    // Redirect to role-specific pages
                     return role switch
                     {
                         "Lecturer" => RedirectToAction("Submit", "Claim"),
                         "Coordinator" => RedirectToAction("Coordinators", "Claim"),
                         "HR" => RedirectToAction("ClaimStatus", "Claim"),
-                        _ => RedirectToAction("Index", "Home")
+                        _ => RedirectToAction("Index", "Login")
                     };
                 }
 
                 ModelState.AddModelError(string.Empty, "The selected role does not match the user's assigned role.");
-                await _signInManager.SignOutAsync(); // Logout the user if the role is invalid
+                await _signInManager.SignOutAsync(); // Logout if role is invalid
             }
             else
             {
@@ -62,6 +59,13 @@ namespace st10209886_PROG_POE1.Controllers
             }
 
             return View();
+        }
+
+        // Logout
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Login");
         }
     }
 }

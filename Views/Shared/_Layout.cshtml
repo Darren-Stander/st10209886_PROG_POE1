@@ -6,36 +6,68 @@
     <title>@ViewData["Title"] - st10209886_PROG_POE1</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/st10209886_PROG_POE1.styles.css" asp-append-version="true" />
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .navbar {
+            background-color: #1f1f1f;
+        }
+
+            .navbar .nav-link, .navbar-brand {
+                color: #ffffff !important;
+            }
+
+                .navbar .nav-link:hover {
+                    color: #cccccc !important;
+                }
+
+        .btn-logout:hover {
+            background-color: #dc3545;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-light">
+        <nav class="navbar navbar-expand-sm navbar-dark">
             <a class="navbar-brand" href="/">CMCS</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Claim/Submit">Submit Claim</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Claim/Coordinators">Coordinators</a>
-                    </li>
-                    <!-- New link for Claim Status -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Claim/ClaimStatus">Claim Status</a>
-                    </li>
+                    @if (User.IsInRole("Lecturer"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Claim/Submit">Submit Claim</a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Coordinator"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Claim/Coordinators">Coordinators</a>
+                        </li>
+                    }
+                    @if (User.IsInRole("HR"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Claim/ClaimStatus">Claim Status</a>
+                        </li>
+                    }
                 </ul>
+                <!-- Logout Button -->
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a class="btn btn-danger ml-auto" asp-action="Logout" asp-controller="Login">Logout</a>
+                }
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container mt-4">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
