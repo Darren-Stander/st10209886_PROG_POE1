@@ -1,49 +1,40 @@
 ﻿@model IEnumerable<st10209886_PROG_POE1.Models.Claim>
 
-<h2>Pending Claims</h2>
+<div class="container mt-5">
+    <h2 class="text-center">Pending Claims</h2>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Lecturer Number</th>
-            <th>Hours Worked</th>
-            <th>Hourly Rate</th>
-            <th>Supporting Document</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var claim in Model)
-        {
+    <table class="table table-dark table-striped">
+        <thead>
             <tr>
-                <td>@claim.LecturerNumber</td>
-                <td>@claim.HoursWorked</td>
-                <td>@claim.HourlyRate</td>
-                <td>
-                    @if (claim.ClaimFiles != null && claim.ClaimFiles.Any())
-                    {
-                        @foreach (var file in claim.ClaimFiles)
-                        {
-                            <a href="/uploads/@file.FileName" target="_blank">View @file.FileName</a>
-                            <br />
-                        }
-                    }
-                    else
-                    {
-                        <span>No supporting document uploaded</span>
-                    }
-                </td>
-                <td>
-                    <form asp-action="Approve" method="post" style="display:inline;">
-                        <input type="hidden" name="claimId" value="@claim.ClaimId" />
-                        <button type="submit" class="btn btn-success">Approve</button>
-                    </form>
-                    <form asp-action="Reject" method="post" style="display:inline;">
-                        <input type="hidden" name="claimId" value="@claim.ClaimId" />
-                        <button type="submit" class="btn btn-danger">Reject</button>
-                    </form>
-                </td>
+                <th>Lecturer Number</th>
+                <th>Hours Worked</th>
+                <th>Hourly Rate</th>
+                <th>Total Claim</th>
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var claim in Model)
+            {
+                <tr>
+                    <td>@claim.LecturerNumber</td>
+                    <td>@claim.HoursWorked</td>
+                    <td>@claim.HourlyRate</td>
+                    <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                    <td>@claim.Status</td>
+                    <td>
+                        <form asp-action="Approve" method="post" style="display:inline;">
+                            <input type="hidden" name="claimId" value="@claim.ClaimId" />
+                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                        </form>
+                        <form asp-action="Reject" method="post" style="display:inline;">
+                            <input type="hidden" name="claimId" value="@claim.ClaimId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

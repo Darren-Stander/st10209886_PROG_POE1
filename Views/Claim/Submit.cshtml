@@ -1,42 +1,42 @@
 ﻿@model st10209886_PROG_POE1.Models.Claim
 
 <div class="container mt-5">
-    <h2 class="text-center">Submit Your Claim</h2>
+    <h2 class="text-center text-light">Submit Your Claim</h2>
 
     <form asp-action="Submit" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
 
         <!-- Lecturer Number -->
         <div class="form-group">
-            <label asp-for="LecturerNumber">Lecturer Number</label>
+            <label asp-for="LecturerNumber" class="text-light"></label>
             <input asp-for="LecturerNumber" class="form-control bg-dark text-light" placeholder="Enter your Lecturer Number" />
             <span asp-validation-for="LecturerNumber" class="text-danger"></span>
         </div>
 
         <!-- Hours Worked -->
         <div class="form-group">
-            <label asp-for="HoursWorked">Hours Worked</label>
+            <label asp-for="HoursWorked" class="text-light"></label>
             <input asp-for="HoursWorked" class="form-control bg-dark text-light" placeholder="Enter the hours worked" />
             <span asp-validation-for="HoursWorked" class="text-danger"></span>
         </div>
 
         <!-- Hourly Rate -->
         <div class="form-group">
-            <label asp-for="HourlyRate">Hourly Rate</label>
+            <label asp-for="HourlyRate" class="text-light"></label>
             <input asp-for="HourlyRate" class="form-control bg-dark text-light" placeholder="Enter your hourly rate" />
             <span asp-validation-for="HourlyRate" class="text-danger"></span>
         </div>
 
         <!-- Additional Notes -->
         <div class="form-group">
-            <label asp-for="AdditionalNotes">Additional Notes</label>
+            <label asp-for="AdditionalNotes" class="text-light"></label>
             <input asp-for="AdditionalNotes" class="form-control bg-dark text-light" placeholder="Add any additional notes" />
             <span asp-validation-for="AdditionalNotes" class="text-danger"></span>
         </div>
 
         <!-- File Upload -->
         <div class="form-group">
-            <label for="supportingDocument">Upload Supporting Document</label>
+            <label for="supportingDocument" class="text-light">Upload Supporting Document</label>
             <input type="file" class="form-control bg-dark text-light" id="supportingDocument" name="supportingDocument" />
         </div>
 

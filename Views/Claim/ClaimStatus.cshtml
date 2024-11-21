@@ -1,31 +1,29 @@
 ﻿@model IEnumerable<st10209886_PROG_POE1.Models.Claim>
-@{
-    ViewData["Title"] = "Claim Status";
-}
 
-<h2>Claim Status</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Lecturer Number</th>  <!-- Add Lecturer Number Header -->
-            <th>Hours Worked</th>
-            <th>Hourly Rate</th>
-            <th>Total Claim</th>
-            <th>Status</th>
-            <th>Submission Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var claim in Model)
-        {
+<div class="container mt-5">
+    <h2 class="text-center">Claim Status</h2>
+
+    <table class="table table-dark table-striped">
+        <thead>
             <tr>
-                <td>@claim.LecturerNumber</td>  <!-- Add Lecturer Number Data -->
-                <td>@claim.HoursWorked</td>
-                <td>@claim.HourlyRate</td>
-                <td>@(claim.HoursWorked * claim.HourlyRate)</td> <!-- Calculating total claim -->
-                <td>@claim.Status</td>
-                <td>@DateTime.Now.ToShortDateString()</td> <!-- Assuming the submission date is now -->
+                <th>Lecturer Number</th>
+                <th>Hours Worked</th>
+                <th>Hourly Rate</th>
+                <th>Total Claim</th>
+                <th>Status</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var claim in Model)
+            {
+                <tr>
+                    <td>@claim.LecturerNumber</td>
+                    <td>@claim.HoursWorked</td>
+                    <td>@claim.HourlyRate</td>
+                    <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                    <td>@claim.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

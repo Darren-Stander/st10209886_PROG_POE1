@@ -11,55 +11,123 @@ namespace st10209886_PROG_POE1.Controllers
     {
         private readonly ClaimContext _context;
 
-        // Constructor to inject ClaimContext (DbContext)
+        // Inject ClaimContext (DbContext) through the constructor
         public ClaimController(ClaimContext context)
         {
             _context = context;
         }
 
-        // GET: Claim/Submit
+        // GET: Claims/Submit
         public IActionResult Submit()
         {
             return View();
         }
 
-        // POST: Claim/Submit
+        // POST: Claims/Submit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(Claim claim, IFormFile supportingDocument)
         {
-            if (ModelState.IsValid)
+            // Validate required fields (LecturerNumber, HoursWorked, HourlyRate)
+            if (string.IsNullOrWhiteSpace(claim.LecturerNumber) || claim.HoursWorked <= 0 || claim.HourlyRate <= 0)
             {
-                // Handle supporting document upload
-                if (supportingDocument != null && supportingDocument.Length > 0)
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        await supportingDocument.CopyToAsync(memoryStream);
-                        var claimFile = new ClaimFile
-                        {
-                            FileName = supportingDocument.FileName,
-                            FileData = memoryStream.ToArray(), // Save file data as byte array
-                        };
-
-                        // Associate the file with the claim
-                        claim.ClaimFiles.Add(claimFile);
-                    }
-                }
-
-                // Set the default status for the claim
-                claim.Status = "Pending";
-
-                // Save the claim to the database
-                _context.Claims.Add(claim);
-                await _context.SaveChangesAsync();
-
-                // Redirect back to the Submit page after successful save
-                return RedirectToAction(nameof(Submit));
+                ModelState.AddModelError(string.Empty, "Please ensure all fields are filled with valid numeric values.");
+                return View(claim);
             }
 
-            // If validation fails, return the user to the same form with error messages
-            return View(claim);
+            // Check AdditionalNotes only if it is not null or empty
+            if (!string.IsNullOrEmpty(claim.AdditionalNotes) &&
+                !System.Text.RegularExpressions.Regex.IsMatch(claim.AdditionalNotes, @"^[a-zA-Z0-9\s]+$"))
+            {
+                ModelState.AddModelError("AdditionalNotes", "Additional Notes can only contain letters, numbers, and spaces.");
+                return View(claim);
+            }
+
+            // Automatically set the status to "Pending" when submitting
+            claim.Status = "Pending";
+
+            // Handle the supporting document if it's provided
+            if (supportingDocument != null && supportingDocument.Length > 0)
+            {
+                byte[] fileData;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await supportingDocument.CopyToAsync(memoryStream);
+                    fileData = memoryStream.ToArray();
+                }
+
+                // Create the ClaimFile object and associate it with the claim
+                var claimFile = new ClaimFile
+                {
+                    FileName = supportingDocument.FileName,
+                    FileData = fileData // Store file data as byte array
+                };
+
+                claim.ClaimFiles.Add(claimFile);
+            }
+
+            // Add the claim to the context and save changes
+            _context.Claims.Add(claim);
+            await _context.SaveChangesAsync();
+
+            // Redirect to the Home page after submission
+            return RedirectToAction("Index", "Login");
+        }
+
+        // GET: Claim/History - Display all claims with their files
+        public async Task<IActionResult> History()
+        {
+            var allClaims = await _context.Claims
+                .Include(c => c.ClaimFiles) // Include files
+                .ToListAsync();
+
+            return View(allClaims);
+        }
+
+        // GET: Claim/ClaimStatus - Display all claims with their current status
+        public async Task<IActionResult> ClaimStatus()
+        {
+            // Fetch all claims from the database
+            var allClaims = await _context.Claims.ToListAsync();
+            return View(allClaims); // Pass the claims to the view
+        }
+
+        // GET: Claim/Coordinators - Display all pending claims with their files
+        public async Task<IActionResult> Coordinators()
+        {
+            var pendingClaims = await _context.Claims
+                .Include(c => c.ClaimFiles) // Include related files
+                .Where(c => c.Status == "Pending").ToListAsync();
+
+            return View(pendingClaims);
+        }
+
+        // POST: Claim/Approve
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Approve(int claimId)
+        {
+            var claim = await _context.Claims.FindAsync(claimId);
+            if (claim != null)
+            {
+                claim.Status = "Approved"; // Mark as approved
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Coordinators));
+        }
+
+        // POST: Claim/Reject
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reject(int claimId)
+        {
+            var claim = await _context.Claims.FindAsync(claimId);
+            if (claim != null)
+            {
+                claim.Status = "Rejected"; // Mark as rejected
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Coordinators));
         }
     }
 }
