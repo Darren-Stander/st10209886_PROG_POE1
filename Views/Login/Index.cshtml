@@ -6,35 +6,31 @@
     <h2 class="text-center">Login</h2>
     <p class="text-center">Select your role and enter your credentials</p>
 
-    <!-- Role Selection Buttons -->
-    <div class="d-flex justify-content-center mt-3 mb-3">
-        <button class="btn btn-primary mx-2 role-select" data-role="Lecturer">Lecturer</button>
-        <button class="btn btn-secondary mx-2 role-select" data-role="Coordinator">Coordinator</button>
-        <button class="btn btn-success mx-2 role-select" data-role="HR">HR</button>
-    </div>
-
-    <!-- Login Form -->
     <form asp-action="Index" method="post" id="loginForm">
+        <!-- Role Selection -->
+        <div class="form-group">
+            <label for="role">Select Role</label>
+            <select class="form-control" id="role" name="role" required>
+                <option value="">-- Select a Role --</option>
+                <option value="Lecturer">Lecturer</option>
+                <option value="Coordinator">Coordinator</option>
+                <option value="HR">HR</option>
+            </select>
+        </div>
+
+        <!-- Email Input -->
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required />
         </div>
+
+        <!-- Password Input -->
         <div class="form-group">
             <label for="password">Password</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required />
         </div>
-        <input type="hidden" id="role" name="role" value="" /> <!-- Hidden field for selected role -->
+
+        <!-- Submit Button -->
         <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
     </form>
 </div>
-
-<script>
-    // JavaScript to handle role selection and set the hidden field
-    document.querySelectorAll('.role-select').forEach(button => {
-        button.addEventListener('click', function () {
-            const role = this.getAttribute('data-role');
-            document.getElementById('role').value = role; // Set selected role
-            alert(`Selected role: ${role}`); // Optional alert to confirm the role
-        });
-    });
-</script>

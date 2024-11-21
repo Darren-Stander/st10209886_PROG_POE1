@@ -63,12 +63,5 @@ namespace st10209886_PROG_POE1.Controllers
 
             return View();
         }
-
-        // Logout
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
     }
 }
