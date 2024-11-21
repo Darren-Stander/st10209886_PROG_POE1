@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace st10209886_PROG_POE1.Migrations
 {
     [DbContext(typeof(ClaimContext))]
-    partial class ClaimContextModelSnapshot : ModelSnapshot
+    [Migration("20241121185655_AddLecturersTable")]
+    partial class AddLecturersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -236,7 +239,7 @@ namespace st10209886_PROG_POE1.Migrations
                     b.Property<double>("HoursWorked")
                         .HasColumnType("float");
 
-                    b.Property<int?>("LecturerId")
+                    b.Property<int>("LecturerId")
                         .HasColumnType("int");
 
                     b.Property<string>("LecturerNumber")
@@ -364,7 +367,9 @@ namespace st10209886_PROG_POE1.Migrations
                 {
                     b.HasOne("st10209886_PROG_POE1.Models.Lecturer", "Lecturer")
                         .WithMany("Claims")
-                        .HasForeignKey("LecturerId");
+                        .HasForeignKey("LecturerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Lecturer");
                 });

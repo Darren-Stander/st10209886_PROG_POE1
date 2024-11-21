@@ -1,0 +1,32 @@
+﻿@model st10209886_PROG_POE1.Models.Lecturer
+
+<div class="container mt-5">
+    <h2 class="text-center">Edit Lecturer</h2>
+
+    <form asp-action="EditLecturer" method="post">
+        <input type="hidden" asp-for="LecturerId" />
+
+        <div class="form-group">
+            <label asp-for="LecturerNumber"></label>
+            <input asp-for="LecturerNumber" class="form-control" readonly />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Phone"></label>
+            <input asp-for="Phone" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="ManageLecturers" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

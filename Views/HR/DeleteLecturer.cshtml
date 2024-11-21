@@ -1,0 +1,12 @@
+﻿@model st10209886_PROG_POE1.Models.Lecturer
+
+<div class="container mt-5">
+    <h2 class="text-center text-danger">Delete Lecturer</h2>
+    <p>Are you sure you want to delete <strong>@Model.Name</strong>?</p>
+
+    <form asp-action="DeleteLecturerConfirmed" method="post">
+        <input type="hidden" asp-for="LecturerId" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="ManageLecturers" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

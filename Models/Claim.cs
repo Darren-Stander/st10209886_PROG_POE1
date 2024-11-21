@@ -3,9 +3,10 @@
     public class Claim
     {
         public int ClaimId { get; set; } // Primary Key
-        public string LecturerNumber { get; set; } // Foreign Key to Lecturer
+        public int? LecturerId { get; set; } // Nullable Foreign Key to Lecturer
         public Lecturer Lecturer { get; set; } // Navigation property
 
+        public string LecturerNumber { get; set; }
         public double HoursWorked { get; set; }
         public double HourlyRate { get; set; }
         public string Status { get; set; } // "Pending", "Approved", "Rejected"
@@ -14,5 +15,3 @@
         public ICollection<ClaimFile> ClaimFiles { get; set; } = new List<ClaimFile>();
     }
 }
-
-/////////////////////////////////////////////////END OF FILE/////////////////////////////////////////////////

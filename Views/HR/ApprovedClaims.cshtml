@@ -1,0 +1,32 @@
+﻿@model IEnumerable<st10209886_PROG_POE1.Models.Claim>
+
+<div class="container mt-5">
+    <h2 class="text-center">Approved Claims Summary</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Lecturer Number</th>
+                <th>Lecturer Name</th>
+                <th>Hours Worked</th>
+                <th>Hourly Rate</th>
+                <th>Total Payment</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in Model)
+            {
+                <tr>
+                    <td>@claim.ClaimId</td>
+                    <td>@claim.LecturerNumber</td>
+                    <td>@claim.Lecturer?.Name</td>
+                    <td>@claim.HoursWorked</td>
+                    <td>@claim.HourlyRate</td>
+                    <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
