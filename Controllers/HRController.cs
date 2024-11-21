@@ -33,6 +33,26 @@ namespace st10209886_PROG_POE1.Controllers
             return View(lecturers);
         }
 
+        // Add Lecturer (GET)
+        public IActionResult AddLecturer()
+        {
+            return View();
+        }
+
+        // Add Lecturer (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddLecturer(Lecturer lecturer)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Lecturers.Add(lecturer);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(ManageLecturers));
+            }
+            return View(lecturer);
+        }
+
         // Edit Lecturer (GET)
         public async Task<IActionResult> EditLecturer(int id)
         {
