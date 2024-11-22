@@ -24,6 +24,7 @@ namespace st10209886_PROG_POE1.Controllers
         }
 
         // POST: Claims/Submit
+        // POST: Claims/Submit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(Claim claim, IFormFile supportingDocument)
@@ -43,15 +44,26 @@ namespace st10209886_PROG_POE1.Controllers
                 return View(claim);
             }
 
-            // Calculate the final payment
-            double finalPayment = claim.HoursWorked * claim.HourlyRate;
-
-            // Automatically set the status to "Pending" when submitting
-            claim.Status = "Pending";
-
-            // Handle the supporting document if it's provided
-            if (supportingDocument != null && supportingDocument.Length > 0)
+            // Validate the supporting document
+            if (supportingDocument != null)
             {
+                // Check file size (5 MB = 5 * 1024 * 1024 bytes)
+                if (supportingDocument.Length > 5 * 1024 * 1024)
+                {
+                    ModelState.AddModelError(string.Empty, "The uploaded file exceeds the size limit of 5 MB.");
+                    return View(claim);
+                }
+
+                // Check file extension
+                var allowedExtensions = new[] { ".doc", ".docx" };
+                var fileExtension = Path.GetExtension(supportingDocument.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    ModelState.AddModelError(string.Empty, "Only Word documents (.doc, .docx) are allowed.");
+                    return View(claim);
+                }
+
+                // Read the file data if it passes all validations
                 byte[] fileData;
                 using (var memoryStream = new MemoryStream())
                 {
@@ -68,6 +80,17 @@ namespace st10209886_PROG_POE1.Controllers
 
                 claim.ClaimFiles.Add(claimFile);
             }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "A supporting document is required.");
+                return View(claim);
+            }
+
+            // Calculate the final payment
+            double finalPayment = claim.HoursWorked * claim.HourlyRate;
+
+            // Automatically set the status to "Pending" when submitting
+            claim.Status = "Pending";
 
             // Add the calculated payment as additional notes
             claim.AdditionalNotes = $"Final Payment: ${finalPayment}";
@@ -79,6 +102,7 @@ namespace st10209886_PROG_POE1.Controllers
             // Redirect to the Home page after submission
             return RedirectToAction("Index", "Login");
         }
+
 
         // GET: Claim/History - Display all claims with their files
         public async Task<IActionResult> History()

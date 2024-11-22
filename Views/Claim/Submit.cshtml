@@ -3,6 +3,19 @@
 <div class="container mt-5">
     <h2 class="text-center text-light">Submit Your Claim</h2>
 
+    <!-- Display validation errors -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
     <form asp-action="Submit" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
 
@@ -52,6 +65,7 @@
 </div>
 
 <script>
+    // Calculate final payment dynamically
     document.getElementById('hoursWorked').addEventListener('input', calculatePayment);
     document.getElementById('hourlyRate').addEventListener('input', calculatePayment);
 
