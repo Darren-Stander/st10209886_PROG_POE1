@@ -3,34 +3,34 @@
 }
 
 <div class="container mt-5">
-    <h2 class="text-center">Login</h2>
-    <p class="text-center">Select your role and enter your credentials</p>
+    <h2 class="text-center">Login - @ViewBag.Role</h2>
 
-    <form asp-action="Index" method="post" id="loginForm">
-        <!-- Role Selection -->
-        <div class="form-group">
-            <label for="role">Select Role</label>
-            <select class="form-control" id="role" name="role" required>
-                <option value="">-- Select a Role --</option>
-                <option value="Lecturer">Lecturer</option>
-                <option value="Coordinator">Coordinator</option>
-                <option value="HR">HR</option>
-            </select>
-        </div>
+    <form asp-action="Index" method="post">
+        @Html.AntiForgeryToken()
 
-        <!-- Email Input -->
+        <input type="hidden" name="role" value="@ViewBag.Role" />
+
+        <!-- Email Field -->
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required />
+            <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email" />
         </div>
 
-        <!-- Password Input -->
+        <!-- Password Field -->
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required />
+            <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password" />
         </div>
 
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
     </form>
+
+    <!-- Error Messages -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger mt-3">
+            @Html.ValidationSummary()
+        </div>
+    }
 </div>

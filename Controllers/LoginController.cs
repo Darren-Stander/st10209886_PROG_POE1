@@ -18,8 +18,14 @@ namespace st10209886_PROG_POE1.Controllers
         }
 
         // GET: Login
-        public IActionResult Index()
+        public IActionResult Index(string role)
         {
+            if (string.IsNullOrWhiteSpace(role))
+            {
+                return RedirectToAction("SelectRole");
+            }
+
+            ViewBag.Role = role; // Pass the selected role to the view
             return View();
         }
 
@@ -34,13 +40,16 @@ namespace st10209886_PROG_POE1.Controllers
                 return View();
             }
 
+            // Attempt to sign in the user
             var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(email);
+
                 if (user != null && await _userManager.IsInRoleAsync(user, role))
                 {
+                    // Redirect based on the selected role
                     return role switch
                     {
                         "Lecturer" => RedirectToAction("Submit", "Claim"),
@@ -50,14 +59,22 @@ namespace st10209886_PROG_POE1.Controllers
                     };
                 }
 
+                // If the user's role doesn't match the selected role
                 ModelState.AddModelError(string.Empty, "The selected role does not match the user's assigned role.");
-                await _signInManager.SignOutAsync(); // Logout if role is invalid
+                await _signInManager.SignOutAsync(); // Log out the user
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                // Handle invalid login attempt
+                ModelState.AddModelError(string.Empty, "Invalid login credentials.");
             }
 
+            return View();
+        }
+
+        // GET: SelectRole
+        public IActionResult SelectRole()
+        {
             return View();
         }
 
