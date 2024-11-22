@@ -30,7 +30,7 @@ namespace st10209886_PROG_POE1
             // Add session services
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Setting session timeout
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
