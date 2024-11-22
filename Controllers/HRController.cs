@@ -90,7 +90,7 @@ namespace st10209886_PROG_POE1.Controllers
         }
 
         // Delete Lecturer (POST)
-        [HttpPost, ActionName("DeleteLecturer")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteLecturerConfirmed(int id)
         {
@@ -102,5 +102,6 @@ namespace st10209886_PROG_POE1.Controllers
             }
             return RedirectToAction(nameof(ManageLecturers));
         }
+
     }
 }

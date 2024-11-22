@@ -34,50 +34,58 @@
         <nav class="navbar navbar-expand-sm navbar-dark">
             <a class="navbar-brand" href="/">CMCS</a>
             <div class="collapse navbar-collapse">
-                <ul class="navbar-nav mr-auto">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        @if (User.IsInRole("Lecturer"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" href="/Claim/Submit">Submit Claim</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("Coordinator"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" href="/Claim/Coordinators">Coordinators</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("HR"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" href="/Claim/ClaimStatus">Claim Status</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/HR/ManageLecturers">Manage Lecturers</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/HR/ApprovedClaims">View Approved Claims</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/HR/AddLecturer">Add Lecturer</a>
-                            </li>
-                        }
-                    }
-                </ul>
-
-                <!-- Logout Button -->
                 @if (User.Identity.IsAuthenticated)
                 {
-                   
-                    <a class="btn btn-danger" asp-action="Logout" asp-controller="Login">Logout</a>
+                    var selectedRole = Context.Session.GetString("SelectedRole");
+                    if (selectedRole != null)
+                    {
+                        <ul class="navbar-nav mr-auto">
+                            @if (selectedRole == "Lecturer")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/Claim/Submit">Submit Claim</a>
+                                </li>
+                            }
+                            @if (selectedRole == "Coordinator")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/Claim/Coordinators">Coordinators</a>
+                                </li>
+                            }
+                            @if (selectedRole == "HR")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/Claim/ClaimStatus">Claim Status</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/HR/ManageLecturers">Manage Lecturers</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/HR/ApprovedClaims">View Approved Claims</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/HR/AddLecturer">Add Lecturer</a>
+                                </li>
+                            }
+                        </ul>
+                    }
                 }
             </div>
+            <!-- Logout Button -->
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="btn btn-danger" asp-action="Logout" asp-controller="Login">Logout</a>
+            }
         </nav>
     </header>
     <div class="container mt-4">
         <main role="main" class="pb-3">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
             @RenderBody()
         </main>
     </div>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace st10209886_PROG_POE1.Controllers
 {
@@ -17,59 +17,74 @@ namespace st10209886_PROG_POE1.Controllers
             _userManager = userManager;
         }
 
-        // GET: Login
         public IActionResult Index()
         {
-            ViewData["ErrorMessage"] = string.Empty;
             return View();
         }
 
-        // POST: Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string email, string password, string role)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(role))
             {
-                ViewData["ErrorMessage"] = "Email, Password, and Role are required.";
-                return View();
+                TempData["ErrorMessage"] = "Email, password, and role are required.";
+                return RedirectToAction("Index");
             }
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                ViewData["ErrorMessage"] = "Invalid login attempt.";
-                return View();
+                TempData["ErrorMessage"] = "Invalid email or password.";
+                return RedirectToAction("Index");
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, false);
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
+            if (!isPasswordValid)
+            {
+                TempData["ErrorMessage"] = "Invalid email or password.";
+                return RedirectToAction("Index");
+            }
+
+            var isInRole = await _userManager.IsInRoleAsync(user, role);
+            if (!isInRole)
+            {
+                TempData["ErrorMessage"] = $"The selected role does not match the user's assigned role.";
+                return RedirectToAction("Index");
+            }
+
+            // Clear previous session data
+            HttpContext.Session.Clear();
+
+            // Sign in the user
+            var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                if (await _userManager.IsInRoleAsync(user, role))
-                {
-                    return role switch
-                    {
-                        "Lecturer" => RedirectToAction("Submit", "Claim"),
-                        "Coordinator" => RedirectToAction("Coordinators", "Claim"),
-                        "HR" => RedirectToAction("ClaimStatus", "Claim"),
-                        _ => RedirectToAction("Index", "Login")
-                    };
-                }
+                // Store the selected role in session
+                HttpContext.Session.SetString("SelectedRole", role);
 
-                ViewData["ErrorMessage"] = "The selected role does not match the user's assigned role.";
-                await _signInManager.SignOutAsync();
-                return View();
+                // Redirect based on the role
+                return role switch
+                {
+                    "Lecturer" => RedirectToAction("Submit", "Claim"),
+                    "Coordinator" => RedirectToAction("Coordinators", "Claim"),
+                    "HR" => RedirectToAction("ClaimStatus", "Claim"),
+                    _ => RedirectToAction("Index")
+                };
             }
 
-            ViewData["ErrorMessage"] = "Invalid login attempt.";
-            return View();
+            TempData["ErrorMessage"] = "Login failed. Please try again.";
+            return RedirectToAction("Index");
         }
 
-        // Logout
         public async Task<IActionResult> Logout()
         {
+            // Clear session data
+            HttpContext.Session.Clear();
+
+            // Log out the user
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Login");
+            return RedirectToAction("Index");
         }
     }
 }

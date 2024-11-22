@@ -40,15 +40,16 @@
                     }
                 </td>
                 <td>
-                    <form asp-action="Approve" method="post" style="display:inline;">
+                    <form asp-action="Approve" method="post" style="display:inline-block;">
                         <input type="hidden" name="claimId" value="@claim.ClaimId" />
-                        <button type="submit" class="btn btn-success">Approve</button>
+                        <button type="submit" class="btn btn-success" style="margin-bottom: 10px;">Approve</button>
                     </form>
-                    <form asp-action="Reject" method="post" style="display:inline;">
+                    <form asp-action="Reject" method="post" style="display:inline-block;">
                         <input type="hidden" name="claimId" value="@claim.ClaimId" />
                         <button type="submit" class="btn btn-danger">Reject</button>
                     </form>
                 </td>
+
             </tr>
         }
     </tbody>

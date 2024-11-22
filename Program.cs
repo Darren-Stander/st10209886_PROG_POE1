@@ -10,7 +10,7 @@ namespace st10209886_PROG_POE1
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add services to the container
             builder.Services.AddDbContext<ClaimContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -18,7 +18,22 @@ namespace st10209886_PROG_POE1
                 .AddEntityFrameworkStores<ClaimContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             builder.Services.AddControllersWithViews();
+
+            // Add session services
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -29,7 +44,7 @@ namespace st10209886_PROG_POE1
                 await SeedRolesAndUsers(services);
             }
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -41,6 +56,7 @@ namespace st10209886_PROG_POE1
 
             app.UseRouting();
 
+            app.UseSession(); // Enable session middleware
             app.UseAuthentication(); // Enable authentication middleware
             app.UseAuthorization(); // Enable authorization middleware
 
@@ -69,18 +85,17 @@ namespace st10209886_PROG_POE1
             // Create users and assign roles
             var users = new[]
             {
-        new { Email = "kiml@gmail.com", Password = "Password123!", Role = "Lecturer" },
-        new { Email = "kimc@gmail.com", Password = "Password123!", Role = "Coordinator" },
-        new { Email = "kimhr@gmail.com", Password = "Password123!", Role = "HR" }
-    };
+                new { Email = "kiml@gmail.com", Password = "Password123!", Role = "Lecturer" },
+                new { Email = "kimc@gmail.com", Password = "Password123!", Role = "Coordinator" },
+                new { Email = "kimhr@gmail.com", Password = "Password123!", Role = "HR" }
+            };
 
             foreach (var userInfo in users)
             {
-                // Check if a user with the current email already exists
-                var existingUser = await userManager.FindByEmailAsync(userInfo.Email);
-                if (existingUser == null)
+                var user = await userManager.FindByEmailAsync(userInfo.Email);
+                if (user == null)
                 {
-                    var user = new IdentityUser { UserName = userInfo.Email, Email = userInfo.Email };
+                    user = new IdentityUser { UserName = userInfo.Email, Email = userInfo.Email };
                     var result = await userManager.CreateAsync(user, userInfo.Password);
                     if (result.Succeeded)
                     {
@@ -89,19 +104,12 @@ namespace st10209886_PROG_POE1
                 }
                 else
                 {
-                    // If the user exists but the email is different, update it
-                    existingUser.UserName = userInfo.Email;
-                    existingUser.Email = userInfo.Email;
-                    await userManager.UpdateAsync(existingUser);
-
-                    // Ensure the user is in the correct role
-                    if (!await userManager.IsInRoleAsync(existingUser, userInfo.Role))
+                    if (!await userManager.IsInRoleAsync(user, userInfo.Role))
                     {
-                        await userManager.AddToRoleAsync(existingUser, userInfo.Role);
+                        await userManager.AddToRoleAsync(user, userInfo.Role);
                     }
                 }
             }
         }
-
     }
 }
