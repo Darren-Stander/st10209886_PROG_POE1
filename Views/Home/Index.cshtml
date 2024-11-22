@@ -1,30 +1,60 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<div class="container d-flex align-items-center justify-content-center vh-100">
+    <div class="text-center bg-dark p-5 rounded shadow">
+        <!-- Dynamic Heading -->
+        <h2 id="loginHeading" class="text-light mb-4">Login</h2>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Select your role to proceed:</p>
+        <!-- Display Error Messages -->
+        @if (!ViewData["ErrorMessage"]?.ToString().Equals(string.Empty) ?? false)
+        {
+            <div class="alert alert-danger">
+                @ViewData["ErrorMessage"]
+            </div>
+        }
 
-    @if (!User.Identity.IsAuthenticated)
-    {
-        <a class="btn btn-warning btn-lg mx-2" href="/Login/Index">Login</a>
-    }
-    else
-    {
-        <div class="mt-4">
-            @if (User.IsInRole("Lecturer"))
-            {
-                <a class="btn btn-primary btn-lg mx-2" href="/Claim/Submit">Lecturer</a>
-            }
-            @if (User.IsInRole("Coordinator"))
-            {
-                <a class="btn btn-secondary btn-lg mx-2" href="/Claim/Coordinators">Coordinator</a>
-            }
-            @if (User.IsInRole("HR"))
-            {
-                <a class="btn btn-success btn-lg mx-2" href="/Claim/ClaimStatus">HR</a>
-            }
+        <!-- Role Selection Section -->
+        <div id="roleSelection" class="mb-4">
+            <h4 class="text-light">Select Your Role</h4>
+            <button class="btn btn-gray mx-2" onclick="selectRole('Lecturer')">Lecturer</button>
+            <button class="btn btn-gray mx-2" onclick="selectRole('Coordinator')">Coordinator</button>
+            <button class="btn btn-gray mx-2" onclick="selectRole('HR')">HR</button>
         </div>
-    }
+
+        <!-- Login Form -->
+        <div id="loginForm" class="d-none">
+            <form asp-action="Index" method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" id="selectedRole" name="role" />
+
+                <div class="form-group">
+                    <label for="email" class="text-light">Email</label>
+                    <input type="email" id="email" name="email" class="form-control bg-dark text-light" placeholder="Enter your email" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="text-light">Password</label>
+                    <input type="password" id="password" name="password" class="form-control bg-dark text-light" placeholder="Enter your password" required />
+                </div>
+
+                <button type="submit" id="loginButton" class="btn btn-success btn-block">Login</button>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+    function selectRole(role) {
+        // Set the selected role in the hidden input
+        document.getElementById("selectedRole").value = role;
+
+        // Update the login heading dynamically
+        document.getElementById("loginHeading").innerText = `Login ${role}`;
+
+        // Update the login button text dynamically
+        document.getElementById("loginButton").innerText = `Login ${role}`;
+
+        // Hide role selection buttons and show login form
+        document.getElementById("roleSelection").classList.add("d-none");
+        document.getElementById("loginForm").classList.remove("d-none");
+    }
+</script>

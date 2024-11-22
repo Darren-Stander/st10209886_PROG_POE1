@@ -18,14 +18,9 @@ namespace st10209886_PROG_POE1.Controllers
         }
 
         // GET: Login
-        public IActionResult Index(string role)
+        public IActionResult Index()
         {
-            if (string.IsNullOrWhiteSpace(role))
-            {
-                return RedirectToAction("SelectRole");
-            }
-
-            ViewBag.Role = role; // Pass the selected role to the view
+            ViewData["ErrorMessage"] = string.Empty;
             return View();
         }
 
@@ -36,20 +31,22 @@ namespace st10209886_PROG_POE1.Controllers
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(role))
             {
-                ModelState.AddModelError(string.Empty, "Email, Password, and Role are required.");
+                ViewData["ErrorMessage"] = "Email, Password, and Role are required.";
                 return View();
             }
 
-            // Attempt to sign in the user
-            var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                ViewData["ErrorMessage"] = "Invalid login attempt.";
+                return View();
+            }
 
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, false);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(email);
-
-                if (user != null && await _userManager.IsInRoleAsync(user, role))
+                if (await _userManager.IsInRoleAsync(user, role))
                 {
-                    // Redirect based on the selected role
                     return role switch
                     {
                         "Lecturer" => RedirectToAction("Submit", "Claim"),
@@ -59,22 +56,12 @@ namespace st10209886_PROG_POE1.Controllers
                     };
                 }
 
-                // If the user's role doesn't match the selected role
-                ModelState.AddModelError(string.Empty, "The selected role does not match the user's assigned role.");
-                await _signInManager.SignOutAsync(); // Log out the user
-            }
-            else
-            {
-                // Handle invalid login attempt
-                ModelState.AddModelError(string.Empty, "Invalid login credentials.");
+                ViewData["ErrorMessage"] = "The selected role does not match the user's assigned role.";
+                await _signInManager.SignOutAsync();
+                return View();
             }
 
-            return View();
-        }
-
-        // GET: SelectRole
-        public IActionResult SelectRole()
-        {
+            ViewData["ErrorMessage"] = "Invalid login attempt.";
             return View();
         }
 
