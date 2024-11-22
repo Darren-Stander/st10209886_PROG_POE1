@@ -69,7 +69,7 @@ namespace st10209886_PROG_POE1.Controllers
                 claim.ClaimFiles.Add(claimFile);
             }
 
-            // Add the calculated payment as additional notes for now
+            // Add the calculated payment as additional notes
             claim.AdditionalNotes = $"Final Payment: ${finalPayment}";
 
             // Add the claim to the context and save changes
@@ -105,7 +105,46 @@ namespace st10209886_PROG_POE1.Controllers
                 .Include(c => c.ClaimFiles) // Include related files
                 .Where(c => c.Status == "Pending").ToListAsync();
 
-            return View(pendingClaims);
+            foreach (var claim in pendingClaims)
+            {
+                string validationMessage = CheckCriteria(claim);
+
+                if (validationMessage == "Approved")
+                {
+                    // Automatically approve the claim if it passes all criteria
+                    claim.Status = "Approved";
+                }
+                else
+                {
+                    // Add the validation result as a note for manual review
+                    claim.AdditionalNotes = validationMessage;
+                }
+            }
+
+            // Save changes for auto-approved claims
+            await _context.SaveChangesAsync();
+
+            return View(pendingClaims.Where(c => c.Status == "Pending")); // Show only still-pending claims
+        }
+
+        // Automation Logic: Check predefined criteria
+        private string CheckCriteria(Claim claim)
+        {
+            // Example criteria
+            const double maxHours = 40;
+            const double minHourlyRate = 10;
+            const double maxHourlyRate = 100;
+
+            if (claim.HoursWorked > maxHours)
+                return $"Hours worked exceed the maximum limit of {maxHours}.";
+
+            if (claim.HourlyRate < minHourlyRate || claim.HourlyRate > maxHourlyRate)
+                return $"Hourly rate must be between {minHourlyRate} and {maxHourlyRate}.";
+
+            if (claim.ClaimFiles == null || !claim.ClaimFiles.Any())
+                return "A supporting document is required.";
+
+            return "Approved"; // All criteria met
         }
 
         // POST: Claim/Approve

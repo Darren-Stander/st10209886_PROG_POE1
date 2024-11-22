@@ -10,6 +10,7 @@
             <th>Hourly Rate</th>
             <th>Total Claim</th>
             <th>Status</th>
+            <th>Additional Notes</th>
             <th>Supporting Document</th>
             <th>Actions</th>
         </tr>
@@ -23,13 +24,13 @@
                 <td>@claim.HourlyRate</td>
                 <td>@(claim.HoursWorked * claim.HourlyRate)</td>
                 <td>@claim.Status</td>
+                <td>@claim.AdditionalNotes</td>
                 <td>
                     @if (claim.ClaimFiles != null && claim.ClaimFiles.Any())
                     {
                         @foreach (var file in claim.ClaimFiles)
                         {
                             <a href="/uploads/@file.FileName" target="_blank">View @file.FileName</a>
-
                             <br />
                         }
                     }
