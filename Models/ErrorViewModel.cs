@@ -14,3 +14,4 @@ namespace st10209886_PROG_POE1.Models
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
 }
+/////////////////////////////////////////////////END OF FILE/////////////////////////////////////////////////

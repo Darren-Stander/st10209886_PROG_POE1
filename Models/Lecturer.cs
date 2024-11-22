@@ -8,6 +8,7 @@
         public string Email { get; set; } // Lecturer's Email
         public string Phone { get; set; } // Lecturer's Phone Number
 
-        public ICollection<Claim> Claims { get; set; } = new List<Claim>(); // Navigation property
+        public ICollection<Claim> Claims { get; set; } = new List<Claim>(); 
     }
 }
+/////////////////////////////////////////////////END OF FILE/////////////////////////////////////////////////
