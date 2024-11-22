@@ -16,15 +16,21 @@
         <!-- Hours Worked -->
         <div class="form-group">
             <label asp-for="HoursWorked" class="text-light"></label>
-            <input asp-for="HoursWorked" class="form-control bg-dark text-light" placeholder="Enter the hours worked" />
+            <input asp-for="HoursWorked" class="form-control bg-dark text-light" id="hoursWorked" placeholder="Enter the hours worked" />
             <span asp-validation-for="HoursWorked" class="text-danger"></span>
         </div>
 
         <!-- Hourly Rate -->
         <div class="form-group">
             <label asp-for="HourlyRate" class="text-light"></label>
-            <input asp-for="HourlyRate" class="form-control bg-dark text-light" placeholder="Enter your hourly rate" />
+            <input asp-for="HourlyRate" class="form-control bg-dark text-light" id="hourlyRate" placeholder="Enter your hourly rate" />
             <span asp-validation-for="HourlyRate" class="text-danger"></span>
+        </div>
+
+        <!-- Final Payment (calculated) -->
+        <div class="form-group">
+            <label class="text-light">Final Payment</label>
+            <input type="text" class="form-control bg-dark text-light" id="finalPayment" readonly />
         </div>
 
         <!-- Additional Notes -->
@@ -44,3 +50,16 @@
         <button type="submit" class="btn btn-primary btn-block">Submit Claim</button>
     </form>
 </div>
+
+<script>
+    document.getElementById('hoursWorked').addEventListener('input', calculatePayment);
+    document.getElementById('hourlyRate').addEventListener('input', calculatePayment);
+
+    function calculatePayment() {
+        const hoursWorked = parseFloat(document.getElementById('hoursWorked').value) || 0;
+        const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+        const finalPayment = hoursWorked * hourlyRate;
+
+        document.getElementById('finalPayment').value = finalPayment.toFixed(2);
+    }
+</script>

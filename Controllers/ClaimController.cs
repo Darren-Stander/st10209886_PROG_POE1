@@ -43,6 +43,9 @@ namespace st10209886_PROG_POE1.Controllers
                 return View(claim);
             }
 
+            // Calculate the final payment
+            double finalPayment = claim.HoursWorked * claim.HourlyRate;
+
             // Automatically set the status to "Pending" when submitting
             claim.Status = "Pending";
 
@@ -65,6 +68,9 @@ namespace st10209886_PROG_POE1.Controllers
 
                 claim.ClaimFiles.Add(claimFile);
             }
+
+            // Add the calculated payment as additional notes for now
+            claim.AdditionalNotes = $"Final Payment: ${finalPayment}";
 
             // Add the claim to the context and save changes
             _context.Claims.Add(claim);
