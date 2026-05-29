@@ -19,7 +19,7 @@
 
 # Run the Project
 ## You can start the project after the database has been moved. Here's how:
-## To begin debugging and executing the project, press F5 or select the green play button at the top.
+## To begin debugging and executing the project, press F5 or select the green play button at the top!
 
 # References 
 ## M3 Programming. (2023, June 26). C# Programming - CRUD with Local Database (MDF) [Video]. YouTube. https://www.youtube.com/watch?v=YtTVmiamdpc
