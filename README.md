@@ -15,7 +15,7 @@
 ## Look for the connection string in the project's appsettings.json file. If it seems like this
 
 # Run Database Migrations
-## You must apply any pending Entity Framework Core migrations in order to construct the database schema locally before launching the application. They ought to do these things. Navigate to Tools > NuGet Package Manager > Package Manager Console in Visual Studio to launch the Package Manager Console.
+## You must apply any pending Entity Framework Core migrations in order to construct the database schema locally before launching the application. They ought to do these things. Navigate to Tools > NuGet Package Manager > Package Manager Console in Visual Studio to launch the Package Manager Console!
 
 # Run the Project
 ## You can start the project after the database has been moved. Here's how:
